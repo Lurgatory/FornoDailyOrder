@@ -9,6 +9,9 @@ from utils.thd_am_csv_generator import out_am_csv, in_am_csv
 from utils.thd_not_am_carrier import not_am_carrier
 from utils.file_utils import combine_files
 
+# Prepare empty dataframes to collect all data
+all_thd_daily_files_df = pd.DataFrame()
+
 # Check the result folder path if it is existed
 os.makedirs(thd_result_folder_path, exist_ok=True)
 
@@ -16,9 +19,6 @@ os.makedirs(thd_result_folder_path, exist_ok=True)
 thd_daily_files = [
     f for f in os.listdir(thd_daily_order_folder_path) if f.endswith(".csv")
 ]
-
-# Prepare empty dataframes to collect all data
-all_thd_daily_files_df = pd.DataFrame()
 
 # Process all AM Transport
 # Get postal code list
