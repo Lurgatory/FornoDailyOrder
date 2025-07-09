@@ -97,7 +97,7 @@ def dd_am_csv_df_generator(output_df, input_dd_daily_order_df):
     missing_sku_df = output_df[~output_df["ModelNo or Service KeyWord"].isin(skus)]
 
     if not missing_sku_df.empty:
-        missing_file = os.path.join(dd_result_folder_path, "Missing.csv")
+        missing_file = os.path.join(dd_result_folder_path, "Unknown SKUs.csv")
         if os.path.exists(missing_file):
             existing_df = pd.read_csv(missing_file)
             combined_df = pd.concat(
@@ -106,6 +106,7 @@ def dd_am_csv_df_generator(output_df, input_dd_daily_order_df):
         else:
             combined_df = missing_sku_df
         combined_df.to_csv(missing_file, index=False)
+        print("We have unknown SKUs")
 
     for sku in skus:
         carton_dimension_row = carton_dimension_df[carton_dimension_df["SKU"] == sku]

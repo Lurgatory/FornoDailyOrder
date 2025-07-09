@@ -90,6 +90,7 @@ with pd.ExcelWriter(
     all_pending_invoice_df.to_excel(
         writer, sheet_name=sheet_name, startrow=startrow, index=False, header=False
     )
+    print("Pending Invoice Orders has been added ")
 
 # Filter out all backorders
 backorders = all_big_dealers_df.loc[

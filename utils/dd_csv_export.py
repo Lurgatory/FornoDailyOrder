@@ -26,6 +26,7 @@ def export_gl_csv(all_gl_df):
         output_gl_path, f"DD Forno GL RCA {today.year}-{today.month}-{today.day}.csv"
     )
     all_gl_df.to_csv(final_gl_path, index=False)
+    print("Ground Label CSV has been created")
 
 
 def export_ofz_csv(all_ofz_df):
@@ -35,6 +36,7 @@ def export_ofz_csv(all_ofz_df):
         output_ofz_path, f"DD Forno OFZ {today.year}-{today.month}-{today.day}.csv"
     )
     all_ofz_df.to_csv(final_ofz_path, index=False)
+    print("Out of Zone CSV has been created")
 
 
 def export_am_csv(output_am_df, filter_pure_df):
@@ -54,3 +56,4 @@ def export_am_csv(output_am_df, filter_pure_df):
             output_am_path, f"DD {safe_warehouse_name} {today.year}-{today.month}-{today.day}.csv"
         )
         warehouse_df.to_csv(final_result_path, index=False)
+        print("All AM CSVs have been created")
