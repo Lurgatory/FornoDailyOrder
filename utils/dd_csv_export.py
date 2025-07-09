@@ -56,4 +56,5 @@ def export_am_csv(output_am_df, filter_pure_df):
             output_am_path, f"DD {safe_warehouse_name} {today.year}-{today.month}-{today.day}.csv"
         )
         warehouse_df.to_csv(final_result_path, index=False)
-        print("All AM CSVs have been created")
+
+    print("All AM CSVs have been created")
