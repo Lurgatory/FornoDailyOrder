@@ -122,9 +122,7 @@ for note in notes:
         ~non_backorders_df["memo (main)"].isin(memo_list)
     ]
 
-# Do filter
 all_am_df = all_am_df.reindex(index=non_backorders_df.index)
-
 export_am_csv(all_am_df, non_backorders_df)
 # Do OFZ
 export_ofz_csv(all_ofz_df)
