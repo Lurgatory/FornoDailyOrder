@@ -6,13 +6,20 @@ from config import (
     dd_daily_order_folder_path,
     dd_result_folder_path,
     dd_pending_invoice_file_path,
-    ground_label_path,
-    today,
     am_csv_template_path,
 )
 from utils.file_utils import combine_files
-from utils.dd_am_csv_df_generator import dd_am_csv_df_generator
 from utils.dd_csv_export import export_gl_csv, export_ofz_csv, export_am_csv
+
+all_daily_orders_df = pd.DataFrame()
+all_loc_df = pd.DataFrame()
+all_pending_invoice_df = pd.DataFrame()
+all_big_dealers_df = pd.DataFrame()
+all_gl_df = pd.DataFrame()
+all_ofz_df = pd.DataFrame()
+am_csv_template_df = pd.read_csv(am_csv_template_path, nrows=0)
+am_csv_template_column = am_csv_template_df.columns.tolist()
+all_am_df = pd.DataFrame(columns=am_csv_template_column)
 
 os.makedirs(dd_result_folder_path, exist_ok=True)
 
@@ -28,9 +35,6 @@ loc_files = [
     for f in os.listdir(dd_gl_ofz_file_path)
     if f.endswith(".csv") and os.path.isfile(os.path.join(dd_gl_ofz_file_path, f))
 ]
-
-all_daily_orders_df = pd.DataFrame()
-all_loc_df = pd.DataFrame()
 
 all_daily_orders_df = combine_files(
     csv_files, dd_daily_order_folder_path, all_daily_orders_df
@@ -51,9 +55,6 @@ all_daily_orders_df = all_daily_orders_df[
 
 digital_dealers = all_daily_orders_df["digital dealer"].dropna().unique()
 
-
-all_pending_invoice_df = pd.DataFrame()
-all_big_dealers_df = pd.DataFrame()
 
 for digital_dealer in digital_dealers:
     digital_dealer_df = all_daily_orders_df[
@@ -94,30 +95,21 @@ with pd.ExcelWriter(
 backorders = all_big_dealers_df.loc[
     all_big_dealers_df["pickupcity"].isna(), "memo (main)"
 ].unique()
-filter_df = all_big_dealers_df[~all_big_dealers_df["memo (main)"].isin(backorders)]
+non_backorders_df = all_big_dealers_df[
+    ~all_big_dealers_df["memo (main)"].isin(backorders)
+]
 
 # GL and OFZ
 notes = ofz_gl_df["note"].dropna().unique()
-
-ground_label_template_df = pd.read_csv(ground_label_path, nrows=0)
-ground_label_template_column = ground_label_template_df.columns.tolist()
-
-am_csv_template_df = pd.read_csv(am_csv_template_path, nrows=0)
-am_csv_template_column = am_csv_template_df.columns.tolist()
-output_am_df = pd.DataFrame(columns=am_csv_template_column)
-
-all_gl_df = pd.DataFrame()
-all_ofz_df = pd.DataFrame()
-filter_pure_df = filter_df
 
 for note in notes:
     memo_list = (
         all_loc_df.loc[all_loc_df["note"] == note, "memo (main)"].dropna().unique()
     )
-    filter_pure_df = filter_pure_df[~filter_pure_df["memo (main)"].isin(memo_list)]
 
     matched_orders = pd.concat(
-        [filter_df[filter_df["memo (main)"] == m] for m in memo_list], ignore_index=True
+        [non_backorders_df[non_backorders_df["memo (main)"] == m] for m in memo_list],
+        ignore_index=True,
     )
 
     if note == "OFZ":
@@ -125,10 +117,14 @@ for note in notes:
     else:
         all_gl_df = pd.concat([all_gl_df, matched_orders], ignore_index=True)
 
-# Do filter
-output_am_df = output_am_df.reindex(index=filter_pure_df.index)
+    non_backorders_df = non_backorders_df[
+        ~non_backorders_df["memo (main)"].isin(memo_list)
+    ]
 
-export_am_csv(output_am_df, filter_pure_df)
+# Do filter
+all_am_df = all_am_df.reindex(index=non_backorders_df.index)
+
+export_am_csv(all_am_df, non_backorders_df)
 # Do OFZ
 export_ofz_csv(all_ofz_df)
 # Do GL
