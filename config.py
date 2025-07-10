@@ -34,7 +34,7 @@ dd_daily_order_folder_path = (
     r"\\SRV-AD01\Folder Redirection\SLu\Documents\DD_Daily_Order"
 )
 dd_gl_ofz_file_path = os.path.join(dd_daily_order_folder_path, "GL_OFZ_List")
-dd_result_folder_path = rf"\\SRV-AD01\Folder Redirection\SLu\Desktop\Buffer\{today.year}\{today.strftime('%b')}\{today.day}\SHOPTEST"
+dd_result_folder_path = rf"\\SRV-AD01\Folder Redirection\SLu\Desktop\Buffer\{today.year}\{today.strftime('%b')}\{today.day}\SHOP"
 dd_pending_invoice_file_path = (
     r"Z:\User\Order Entry User\Michael Daily Orders\Orders\PendingOrders.xlsx"
 )
